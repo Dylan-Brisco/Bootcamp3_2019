@@ -1,4 +1,3 @@
-
 /* Dependencies */
 var mongoose = require('mongoose'), 
     Listing = require('../models/listings.server.model.js'),
@@ -58,10 +57,22 @@ exports.update = function(req, res) {
   var listing = req.listing;
 
   /* Replace the listings's properties with the new properties found in req.body */
+  listing.name = req.body.name;
+  listing.code = req.body.code;
  
   /*save the coordinates (located in req.results if there is an address property) */
+  listing.coordinates = req.body.coordinates;
+  listing.address 	  = req.body.address;
  
   /* Save the listing */
+  listing.save(function(err) {
+  	if(err) {
+  		throw err;
+  	}
+  	else {
+  		res.json(listing);
+  	}
+  });
 
 };
 
@@ -69,13 +80,27 @@ exports.update = function(req, res) {
 exports.delete = function(req, res) {
   var listing = req.listing;
 
-  /* Add your code to remove the listins */
+  /* Add your code to remove the listings */
+  Listing.findByIdAndRemove(listing._id, function(err) {
+  	if(err) {
+  		throw err;
+  	}
+  	else {
+  		res.json(listing);
+  	}
+  });
 
 };
 
 /* Retreive all the directory listings, sorted alphabetically by listing code */
 exports.list = function(req, res) {
   /* Add your code */
+  Listing.find({}, function(err, data) {
+  	if(err) {
+  		throw err;
+  	}
+  	res.json(data);
+  	}).sort({listingCode : 1});
 };
 
 /* 
